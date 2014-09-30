@@ -19,9 +19,12 @@
             height: 30px;
         }
     </style>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+<!--    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>-->
+
     <script src="js/globals.js"></script>
     <script src="js/thumb.js"></script>
     <script src="js/playlistItem.js"></script>
@@ -38,12 +41,24 @@
   </head>
   <body>
 
+    <div class="btn-group">
+      <button type="button" class="btn btn-default">Left</button>
+      <button type="button" class="btn btn-default">Middle</button>
+      <button type="button" class="btn btn-default">Right</button>
+    </div>
     
     <div id="container"></div>
 
     <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.5.5.min.js"></script>
     <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.0.6/kinetic.js"></script>-->
-    <script defer="defer">
+   
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery-2.1.1.min.js"></script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+      
+       <script defer="defer">
 
 
         $(function () {

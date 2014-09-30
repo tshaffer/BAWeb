@@ -72,6 +72,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="css\" />
+    <Folder Include="fonts\" />
     <Folder Include="js\" />
   </ItemGroup>
   <PropertyGroup>
