@@ -327,6 +327,52 @@
             stage.draw();
         }
 
+        function GetThumbs() {
+
+            var thumbs = [
+                ["image1.png", "http://bsnm.s3.amazonaws.com/ted/3e7ecf030f0a76bf56e0c33f8e7e74fc"],
+                ["image2.png", "http://bsnm.s3.amazonaws.com/ted/76d183d01fc3c53103a74b412da51cec"],
+                ["image3.png", "http://bsnm.s3.amazonaws.com/ted/92e443de0ff020199c79151f87b3540a"],
+                ["image4.png", "http://bsnm.s3.amazonaws.com/ted/5349961cd8d806e84438d87d16c797d7"],
+                ["image5.png", "http://bsnm.s3.amazonaws.com/ted/b9196c9efb80cab6236d1c9adeeb7077"],
+                ["image6.png", "http://bsnm.s3.amazonaws.com/ted/fb166f9d823a36a843554075412e8f7a"],
+                ["image7.png", "http://bsnm.s3.amazonaws.com/ted/41261721a6ead8f458c96604bfd9e66e"],
+                ["iceCream.png", "http://bsnm.s3.amazonaws.com/ted/6eefbaa1557a2584cc901f880cb536f8"],
+                ["hotDog.png", "http://bsnm.s3.amazonaws.com/ted/a981ffcf234b03e7779a1d1df3100b89"]];
+
+            return thumbs;
+        }
+
+        function GenerateThumbDisplay() {
+
+            var thumbs = GetThumbs();
+
+            var leftThumb = true;
+
+            var x = mediaLibraryXBorder;
+            var y = mediaLibraryYBorder;
+
+            //debugger;
+            var arrayLength = thumbs.length;
+            for (var i = 0; i < arrayLength; i++) {
+
+                var thumb = thumbs[i];
+                console.log("file name is " + thumb[0]);
+                console.log("url is " + thumb[1]);
+
+                var playlistItem = new ImagePlaylistItem(thumb[0], thumb[1]);
+                var mediaLibraryItem = new MediaLibraryItem(thumb[0], playlistItem, x, y);
+
+                if (leftThumb) {
+                    x += thumbWidth + mediaLibraryIntraItemSpacing;
+                }
+                else {
+                    x = mediaLibraryXBorder;
+                    y += thumbHeight + mediaLibraryIntraItemSpacing;
+                }
+                leftThumb = !leftThumb;
+            }
+        }
 
         // MAIN
         var sign = new Sign("BS Presentatation");
@@ -432,12 +478,7 @@
         mediaLibaryItemDragRect.yMin = toolbarItemSize;
         mediaLibaryItemDragRect.yMax = 599;
 
-//        var iceCreamPlaylistItem = new ImagePlaylistItem("iceCream.png", "http://bsnm.s3.amazonaws.com/ted/6eefbaa1557a2584cc901f880cb536f8");
-        var iceCreamPlaylistItem = new ImagePlaylistItem("iceCream.png", "assets/iceCream.png");
-        var iceCreamMediaLibraryItem = new MediaLibraryItem("iceCream.png", iceCreamPlaylistItem, mediaLibraryXBorder, mediaLibraryYBorder);
-//        var hotDogPlaylistItem = new ImagePlaylistItem("hotDog.png", "http://bsnm.s3.amazonaws.com/ted/a981ffcf234b03e7779a1d1df3100b89");
-        var hotDogPlaylistItem = new ImagePlaylistItem("hotDog.png", "assets/hotDog.png");
-        var hotDogMediaLibraryItem = new MediaLibraryItem("hotDog.png", hotDogPlaylistItem, mediaLibraryXBorder + thumbWidth + mediaLibraryIntraItemSpacing, mediaLibraryYBorder);
+        GenerateThumbDisplay();
 
         // initialize event toolbar
         eventToolbar = new EventToolbar();
