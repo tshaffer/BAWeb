@@ -70,7 +70,7 @@ TransitionView.prototype.CreateEventImage = function (x, y) {
     });
     this.kimage.on('dblclick', function () {
         console.log("double click");
-        timeOutEventDlg.dialog("open");
+        $('#timeoutEventDlg').modal();
     });
 
     interactiveLayer.add(this.kimage);

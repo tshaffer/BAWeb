@@ -21,9 +21,6 @@
     </style>
 
     <link href="css/bootstrap.min.css" rel="stylesheet"/>
-<!--    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>-->
 
     <script src="js/globals.js"></script>
     <script src="js/thumb.js"></script>
@@ -47,6 +44,30 @@
       <button type="button" class="btn btn-default">Right</button>
     </div>
     
+    <div class="modal fade" id="timeoutEventDlg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">Timeout Event</h4>
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Specify timeout (seconds)</label>
+                <input type="text" class="form-control" id="txtTimeout" placeholder="6">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button id="btnTimeoutEventDlgOK" type="button" class="btn btn-primary">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div id="container"></div>
 
     <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.5.5.min.js"></script>
@@ -63,6 +84,32 @@
 
         $(function () {
 
+            $('#btnTimeoutEventDlgOK').click(function () {
+                console.log("save changes clicked");
+                var timeoutInSeconds = $('#txtTimeout')[0].value;
+                if (timeoutInSeconds == "") {
+                    timeoutInSeconds = $('#txtTimeout')[0].placeholder;
+                }
+                console.log("timeout in seconds = " + timeoutInSeconds);
+                $('#timeoutEventDlg').modal('hide');
+            })
+
+            $('#timeoutEventDlg').on('show.bs.modal', function (e) {
+                console.log("timeoutEventDlg show");
+            })
+
+            $('#timeoutEventDlg').on('shown.bs.modal', function (e) {
+                console.log("timeoutEventDlg shown");
+            })
+
+            $('#timeoutEventDlg').on('hide.bs.modal', function (e) {
+                console.log("timeoutEventDlg hide");
+            })
+
+            $('#timeoutEventDlg').on('hidden.bs.modal', function (e) {
+                console.log("timeoutEventDlg hidden");
+            })
+
 // EventToolbar
         function EventToolbar() {
             this.numToolbarItemsLoaded = 0;
@@ -71,6 +118,7 @@
             this.timeoutToolbarItem = new ToolbarItem("timeout", "images/36x36_timeout.png", "images/36x36_timeout_selected.png", (this.numToolbarItems * toolbarItemSize) + (toolbarItemSize - toolbarIconSize) / 2, (toolbarItemSize - toolbarIconSize) / 2);
             this.numToolbarItems++;
             this.videoEndToolbarItem = new ToolbarItem("mediaEnd", "images/36x36_videoend.png", "images/36x36_videoend_selected.png", (this.numToolbarItems * toolbarItemSize) + (toolbarItemSize - toolbarIconSize) / 2, (toolbarItemSize - toolbarIconSize) / 2);
+            this.numToolbarItems++;
 
             this.selectedToolbarItem = this.timeoutToolbarItem;
         }
@@ -78,7 +126,7 @@
         EventToolbar.prototype.ImageLoaded = function () {
             this.numToolbarItemsLoaded++;
 
-            if (this.numToolbarItems == this.numToolbarItemsLoaded) {
+            if (this.numToolbarItemsLoaded == (this.numToolbarItems * 2)) {
                 this.SelectUserEvent(this.timeoutToolbarItem);
             }
         }
