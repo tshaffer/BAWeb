@@ -1,0 +1,419 @@
+﻿<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>
+        BA
+    </title>
+    <style>
+      li {font-size:10px;}
+      body {
+        margin: 0px;
+        padding: 0px;
+       }
+        div#editTabs {
+            width: 260px;
+            height: 30px;
+        }
+        div#mediaLibraryTabs {
+            width: 260px;
+            height: 30px;
+        }
+    </style>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="js/globals.js"></script>
+    <script src="js/thumb.js"></script>
+    <script src="js/playlistItem.js"></script>
+    <script src="js/imagePlaylistItem.js"></script>
+    <script src="js/transition.js"></script>
+    <script src="js/transitionView.js"></script>
+    <script src="js/mediaLibraryItem.js"></script>
+    <script src="js/mediaState.js"></script>
+    <script src="js/zoneView.js"></script>
+    <script src="js/zone.js"></script>
+    <script src="js/sign.js"></script>
+    <script src="js/displayedZone.js"></script>
+    <script src="js/zoneEditor.js"></script>
+  </head>
+  <body>
+
+    
+    <div id="container"></div>
+
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.5.5.min.js"></script>
+    <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.0.6/kinetic.js"></script>-->
+    <script defer="defer">
+
+
+        $(function () {
+
+// EventToolbar
+        function EventToolbar() {
+            this.numToolbarItemsLoaded = 0;
+
+            this.numToolbarItems = 0;
+            this.timeoutToolbarItem = new ToolbarItem("timeout", "images/36x36_timeout.png", "images/36x36_timeout_selected.png", (this.numToolbarItems * toolbarItemSize) + (toolbarItemSize - toolbarIconSize) / 2, (toolbarItemSize - toolbarIconSize) / 2);
+            this.numToolbarItems++;
+            this.videoEndToolbarItem = new ToolbarItem("mediaEnd", "images/36x36_videoend.png", "images/36x36_videoend_selected.png", (this.numToolbarItems * toolbarItemSize) + (toolbarItemSize - toolbarIconSize) / 2, (toolbarItemSize - toolbarIconSize) / 2);
+
+            this.selectedToolbarItem = this.timeoutToolbarItem;
+        }
+
+        EventToolbar.prototype.ImageLoaded = function () {
+            this.numToolbarItemsLoaded++;
+
+            if (this.numToolbarItems == this.numToolbarItemsLoaded) {
+                this.SelectUserEvent(this.timeoutToolbarItem);
+            }
+        }
+
+        EventToolbar.prototype.SelectUserEvent = function (selectedToolbarItem) {
+            // deselect current selected toolbar item
+            this.selectedToolbarItem.DisplayUnselected();
+
+            // select new item
+            this.selectedToolbarItem = selectedToolbarItem;
+            this.selectedToolbarItem.DisplaySelected();
+
+            stage.draw();
+        }
+
+// ToolbarItem
+        function ToolbarItem(name, unselectedUrl, selectedUrl, x, y) {
+            this.name = name;
+            this.unselectedUrl = unselectedUrl;
+            this.selectedUrl = selectedUrl;
+            this.x = x;
+            this.y = y;
+
+            this.unselectedImage = new Image();
+            this.unselectedImage.src = unselectedUrl;
+            this.unselectedImage.toolbarItem = this;
+            this.unselectedImage.onload = function () {
+                this.toolbarItem.UnselectedImageLoaded();
+            }
+
+            this.selectedImage = new Image();
+            this.selectedImage.src = selectedUrl;
+            this.selectedImage.toolbarItem = this;
+            this.selectedImage.onload = function () {
+                this.toolbarItem.SelectedImageLoaded();
+            }
+        }
+
+        ToolbarItem.prototype.DisplaySelected = function () {
+            this.kimage.setImage(this.selectedImage);
+        }
+
+        ToolbarItem.prototype.DisplayUnselected = function () {
+            this.kimage.setImage(this.unselectedImage);
+        }
+
+        ToolbarItem.prototype.SelectedImageLoaded = function () {
+            eventToolbar.ImageLoaded();
+        }
+
+        ToolbarItem.prototype.UnselectedImageLoaded = function () {
+
+            this.unselectedImageLoaded = true;
+
+            this.kgroup = new Kinetic.Group({
+                x: this.x,
+                y: this.y,
+                width: thumbWidth,
+                height: thumbHeight,
+            });
+            this.kgroup.toolbarItem = this;
+
+            this.kimage = new Kinetic.Image({
+                x: 0,
+                y: 0,
+                image: this.unselectedImage,
+            });
+            this.kgroup.add(this.kimage);
+
+            this.kgroup.on('mousedown', function () {
+                eventToolbar.SelectUserEvent(this.toolbarItem);
+            });
+
+            this.kgroup.on('touchstart', function () {
+                eventToolbar.SelectUserEvent(this.toolbarItem);
+            });
+
+            toolbarLayer.add(this.kgroup);
+            stage.draw();
+
+            eventToolbar.ImageLoaded();
+        }
+
+
+// BSEvent
+        function BSEvent(name, iconUrl, iconSelectedUrl) {
+            this.name = name;
+            this.iconUrl = iconUrl;
+            this.iconSelectedUrl = iconSelectedUrl;
+
+            this.icon = new Image();
+            this.icon.src = this.iconUrl;
+            this.icon.onload = function () {
+                console.log("BSEvent icon loaded");
+            }
+
+            this.iconSelected = new Image();
+            this.iconSelected.src = this.iconSelectedUrl;
+            this.iconSelected.onload = function () {
+                console.log("BSEvent iconSelected loaded");
+            }
+        }
+
+// Main methods
+
+        function GetBSEvent(bsEventName) {
+            matchedBSEvent = null;
+            if (bsEvents[bsEventName] != undefined) {
+                matchedBSEvent = bsEvents[bsEventName];
+            }
+            return matchedBSEvent;
+        }
+
+        ConvertToCanvasCoordinates = function(pos) {
+            convertedPos = {}
+            convertedPos.x = pos.x - mediaLibraryWidth;
+            convertedPos.y = pos.y - toolbarItemSize;
+            return convertedPos;
+        }
+
+        function ConvertToZoneLayoutCoordinates(pos) {
+            convertedPos = {}
+            convertedPos.x = pos.x - mediaLibraryWidth;
+            convertedPos.y = pos.y - 0;
+            return convertedPos;
+        }
+
+        function EditEvent() {
+            console.log("OK pressed in EditEvent");
+            console.log("User entered " + $("#tab_seconds").val());
+            return false;
+        }
+
+        var handlefocus = function (e) {
+            if (e.type == 'mouseover') {
+                for (var i = 0; i < canvases.length; i++) {
+                    canvases[i].focus();
+                }
+                return false;
+            } else if (e.type == 'mouseout') {
+                for (var i = 0; i < canvases.length; i++) {
+                    canvases[i].blur();
+                }
+                return false;
+            }
+            return true;
+        };
+
+        //var handlekeydown = function (e) {
+        //    alert('keycode: ' + e.keyCode);
+        //    return false;
+        //};
+
+        function MediaStateSelected() {
+            console.log("mediaStateSelected invoked");
+        }
+
+        function MediaLibraryItemSelected() {
+            console.log("mediaLibraryItemSelected");
+        }
+
+        window.onkeydown = function (e) {
+            CaptureModifierKeyStates(e);
+        }
+
+        window.onkeyup = function (e) {
+            CaptureModifierKeyStates(e);
+        }
+
+        function CaptureModifierKeyStates(e) {
+            if (!e) e = window.event;
+            _modifierShiftKeyDown = e.shiftKey;
+            _modifierCtrlKeyDown = e.ctrlKey;
+        }
+
+        function ShowZoneLayout() {
+            // hide edit UI
+            $("#mediaLibraryTabs").hide();
+            toolbarLayer.hide();
+            mediaLibraryLayer.hide();
+            interactiveLayer.hide();
+
+            // show layout UI
+            zoneEditor.ShowZoneLayout(sign.zoneList);
+
+        }
+
+        function ShowEditLayout() {
+            // hide layout UI
+            zoneLayoutLayer.hide();
+
+            // show edit UI
+            $("#mediaLibraryTabs").show();
+            toolbarLayer.show();
+            mediaLibraryLayer.show();
+            interactiveLayer.show();
+
+            stage.draw();
+        }
+
+
+        // MAIN
+        var sign = new Sign("BS Presentatation");
+
+        stage = new Kinetic.Stage({
+                container: "container",
+            width: 1000,
+            height: 600
+        });
+
+        var toolbarLayer = new Kinetic.Layer({
+            x: mediaLibraryWidth,
+            y: 0,
+            width: 1000 - mediaLibraryWidth,
+            height: toolbarItemSize,
+        });
+
+        var toolbarRect = new Kinetic.Rect({
+            x: 0,
+            y: 0,
+            width: 1000 - mediaLibraryWidth,
+            height: toolbarItemSize,
+            fill: "#CBD8E1"
+        });
+        toolbarLayer.add(toolbarRect);
+
+        mediaLibraryLayer = new Kinetic.Layer({
+                x: 0,
+            y: toolbarItemSize,
+            width: mediaLibraryWidth,
+            height: 600 - toolbarItemSize
+        });
+
+        interactiveLayer = new Kinetic.Layer({
+                x: mediaLibraryWidth,
+            y: toolbarItemSize,
+            width: 1000 - mediaLibraryWidth,
+            height: 600 - toolbarItemSize
+        });
+
+        zoneLayoutLayer = new Kinetic.Layer({
+            x: mediaLibraryWidth,
+            y: toolbarItemSize,
+            width: 1000 - mediaLibraryWidth,
+            height: 600 - toolbarItemSize
+        });
+
+
+        stage.on('mousemove', function (e) {
+            zoneView.MouseMove(e);
+        });
+
+        stage.on('mouseup', function (e) {
+            zoneView.MouseUp(e);
+        });
+
+        // canvas background
+        var rect = new Kinetic.Rect({
+            x: 0,
+            y: 0,
+            width: mediaLibraryWidth,
+            height: 600 - toolbarItemSize,
+            fill: "#F3F3F3"
+        });
+        mediaLibraryLayer.add(rect);
+
+        //rect = new Kinetic.Rect({
+        //    x: 0,
+        //    y: 0,
+        //    width: 1000 - mediaLibraryWidth,
+        //    height: 600 - toolbarItemSize,
+        //    fill: "#F3F3F3"
+        //});
+        //zoneLayoutLayer.add(rect);
+
+        var monitorRect = new Kinetic.Rect({
+            x: 0,
+            y: 0,
+            width: 1000 - mediaLibraryWidth,
+            height: 600 - toolbarItemSize,
+            stroke: "black",
+            strokeWidth: 1
+        });
+        zoneLayoutLayer.add(monitorRect);
+
+        var line = new Kinetic.Line({
+            points: [mediaLibraryWidth-1, 0, mediaLibraryWidth-1, 599],
+            stroke: 'black',
+            strokeWidth: 1
+        });
+        mediaLibraryLayer.add(line);
+
+        stage.add(toolbarLayer);
+        stage.add(interactiveLayer);
+        stage.add(mediaLibraryLayer);
+        stage.add(zoneLayoutLayer);
+
+        zoneLayoutLayer.hide();
+
+        mediaLibaryItemDragRect = {}
+        mediaLibaryItemDragRect.xMin = 0;
+        mediaLibaryItemDragRect.xMax = 999;
+        mediaLibaryItemDragRect.yMin = toolbarItemSize;
+        mediaLibaryItemDragRect.yMax = 599;
+
+//        var iceCreamPlaylistItem = new ImagePlaylistItem("iceCream.png", "http://bsnm.s3.amazonaws.com/ted/6eefbaa1557a2584cc901f880cb536f8");
+        var iceCreamPlaylistItem = new ImagePlaylistItem("iceCream.png", "assets/iceCream.png");
+        var iceCreamMediaLibraryItem = new MediaLibraryItem("iceCream.png", iceCreamPlaylistItem, mediaLibraryXBorder, mediaLibraryYBorder);
+//        var hotDogPlaylistItem = new ImagePlaylistItem("hotDog.png", "http://bsnm.s3.amazonaws.com/ted/a981ffcf234b03e7779a1d1df3100b89");
+        var hotDogPlaylistItem = new ImagePlaylistItem("hotDog.png", "assets/hotDog.png");
+        var hotDogMediaLibraryItem = new MediaLibraryItem("hotDog.png", hotDogPlaylistItem, mediaLibraryXBorder + thumbWidth + mediaLibraryIntraItemSpacing, mediaLibraryYBorder);
+
+        // initialize event toolbar
+        eventToolbar = new EventToolbar();
+
+        // initialize events
+        timeoutEvent = new BSEvent("timeout", "images/24x24_timeout.png", "images/24x24_timeout_selected.png");
+        mediaEndEvent = new BSEvent("mediaEnd", "images/24x24_videoend.png", "images/24x24_videoend_selected.png");
+
+        bsEvents = {};
+        bsEvents["timeout"] = timeoutEvent;
+        bsEvents["mediaEnd"] = mediaEndEvent;
+
+        //var canvases = document.getElementsByTagName('canvas');
+        //for (var i = 0; i < canvases.length; i++) {
+        //    console.log(canvases[i]);
+        //    canvases[i].addEventListener('mouseover', handlefocus, false);
+        //    canvases[i].addEventListener('mouseout', handlefocus, false);
+        //    canvases[i].addEventListener('keydown', handlekeydown, false);
+        //}
+
+        $(window).keypress(function (e) {
+            console.log("e.charCode = " + e.charCode);
+            if (e.charCode == 97 && _modifierCtrlKeyDown) {
+                // doesn't work - Ctrl-A is swallowed by other forms.
+                SelectAllMediaStates();
+            }
+        })
+
+        zoneView = new ZoneView();
+
+        var zoneEditor = new ZoneEditor();
+
+        mainZone = new Zone("Main zone", 0, 0, 400, 300);
+        sign.zoneList.push(mainZone);
+        mediaStates = mainZone.GetMediaStates();
+        zoneView.DisplayZone(mediaStates);
+
+    });
+
+    </script>
+  </body>
+</html>
