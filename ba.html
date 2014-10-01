@@ -70,6 +70,8 @@
 
     <div id="container"></div>
 
+    <div id="thumbPagination"></div>
+
     <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.5.5.min.js"></script>
     <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.0.6/kinetic.js"></script>-->
    
@@ -79,6 +81,9 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
       
+    <!--http://botmonster.com/jquery-bootpag/-->
+    <script src="js/jquery.bootpag.min.js"></script>
+
        <script defer="defer">
 
 
@@ -327,9 +332,13 @@
             stage.draw();
         }
 
+        var mediaLibraryItems = [];
+        var thumbs;
+        var visibleThumbs = 8;
+
         function GetThumbs() {
 
-            var thumbs = [
+            var hardCodedThumbs = [
                 ["image1.png", "http://bsnm.s3.amazonaws.com/ted/3e7ecf030f0a76bf56e0c33f8e7e74fc"],
                 ["image2.png", "http://bsnm.s3.amazonaws.com/ted/76d183d01fc3c53103a74b412da51cec"],
                 ["image3.png", "http://bsnm.s3.amazonaws.com/ted/92e443de0ff020199c79151f87b3540a"],
@@ -340,12 +349,73 @@
                 ["iceCream.png", "http://bsnm.s3.amazonaws.com/ted/6eefbaa1557a2584cc901f880cb536f8"],
                 ["hotDog.png", "http://bsnm.s3.amazonaws.com/ted/a981ffcf234b03e7779a1d1df3100b89"]];
 
-            return thumbs;
+            return hardCodedThumbs;
+        }
+
+        function EraseThumbs() {
+            // remove old thumbs
+            // optimisation - don't want to delete the items that need to get downloaded if that means they'll need to get downloaded again
+            mediaLibraryItems.forEach(function (mediaLibraryItem) {
+                mediaLibraryItem.EraseThumb();
+                delete mediaLibraryItem;
+            });
+
+            mediaLibaryItems = [];
+        }
+
+        function UpdateThumbDisplay(pageNumber) {
+
+            EraseThumbs();
+
+            var leftThumb = true;
+
+            var x = mediaLibraryXBorder;
+            var y = mediaLibraryYBorder;
+
+            //debugger;
+            var numThumbs = thumbs.length;
+            var startThumbIndex = pageNumber * visibleThumbs;
+            var endThumbIndex = Math.min(numThumbs, startThumbIndex + visibleThumbs);
+
+            for (var i = startThumbIndex; i < endThumbIndex; i++) {
+
+                var thumb = thumbs[i];
+                console.log("file name is " + thumb[0]);
+                console.log("url is " + thumb[1]);
+
+                var playlistItem = new ImagePlaylistItem(thumb[0], thumb[1]);
+                var mediaLibraryItem = new MediaLibraryItem(thumb[0], playlistItem, x, y);
+                mediaLibraryItems.push(mediaLibraryItem);
+
+                if (leftThumb) {
+                    x += thumbWidth + mediaLibraryIntraItemSpacing;
+                }
+                else {
+                    x = mediaLibraryXBorder;
+                    y += thumbHeight + mediaLibraryIntraItemSpacing;
+                }
+                leftThumb = !leftThumb;
+            }
+
+            stage.draw();
         }
 
         function GenerateThumbDisplay() {
 
-            var thumbs = GetThumbs();
+            thumbs = GetThumbs();
+
+            var numThumbPages = Math.round((thumbs.length / visibleThumbs) + 1);
+
+            // initialize thumb pagination
+            $('#thumbPagination').bootpag({
+                total: numThumbPages
+            }).on("page", function (event, pageNumber) {
+                console.log("pagination event");
+                UpdateThumbDisplay(pageNumber-1);
+            });
+
+            UpdateThumbDisplay(0);
+            return;
 
             var leftThumb = true;
 
@@ -362,6 +432,7 @@
 
                 var playlistItem = new ImagePlaylistItem(thumb[0], thumb[1]);
                 var mediaLibraryItem = new MediaLibraryItem(thumb[0], playlistItem, x, y);
+                mediaLibraryItems.push(mediaLibraryItem);
 
                 if (leftThumb) {
                     x += thumbWidth + mediaLibraryIntraItemSpacing;

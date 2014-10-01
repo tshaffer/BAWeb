@@ -66,7 +66,7 @@
         });
         this.kgroup.add(rect);
 
-        // bound drag
+        // bound drag (limit the drag to the dragRect)
         this.kgroup.setDragBoundFunc(
             // 'this' is the kgroup
             function (pos) {
@@ -140,6 +140,10 @@
         }
     }
 
+}
+
+Thumb.prototype.Erase = function () {
+    this.kgroup.destroy();
 }
 
 Thumb.prototype.GetCurrentPosition = function () {

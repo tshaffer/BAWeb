@@ -58,6 +58,23 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ba.html" />
+    <Content Include="js\bootstrap.js" />
+    <Content Include="js\bootstrap.min.js" />
+    <Content Include="js\displayedZone.js" />
+    <Content Include="js\globals.js" />
+    <Content Include="js\imagePlaylistItem.js" />
+    <Content Include="js\jquery-2.1.1.min.js" />
+    <Content Include="js\jquery.bootpag.min.js" />
+    <Content Include="js\mediaLibraryItem.js" />
+    <Content Include="js\mediaState.js" />
+    <Content Include="js\playlistItem.js" />
+    <Content Include="js\sign.js" />
+    <Content Include="js\thumb.js" />
+    <Content Include="js\transition.js" />
+    <Content Include="js\transitionView.js" />
+    <Content Include="js\zone.js" />
+    <Content Include="js\zoneEditor.js" />
+    <Content Include="js\zoneView.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -74,7 +91,6 @@
   <ItemGroup>
     <Folder Include="css\" />
     <Folder Include="fonts\" />
-    <Folder Include="js\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

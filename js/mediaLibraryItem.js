@@ -6,3 +6,9 @@
 
     this.thumb = new MediaLibraryThumb(name, playlistItem.url, x, y);
 }
+
+MediaLibraryItem.prototype.EraseThumb = function () {
+    this.thumb.Erase();
+}
+
+
