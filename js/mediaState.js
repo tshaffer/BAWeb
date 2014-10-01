@@ -24,3 +24,40 @@ MediaState.prototype.SetCurrentPosition = function (pos) {
     this.x = pos.x;
     this.y = pos.y;
 }
+
+MediaState.prototype.DeleteTransitions = function () {
+
+    var mediaState = this;
+
+    this.transitionsIn.forEach(function (transitionIn) {
+        //debugger;
+
+        // delete transition from transitionsOut of source transition
+        var sourceMediaState = transitionIn.sourceMediaState;
+
+        // TODO find corresponding transition - method is not foolproof - need some kind of unique id to match transition
+        sourceMediaState.transitionsOut.forEach(function (sourceMediaStateTransitionOut) {
+            // TODO might there be transitions that have no target?
+            // TODO - targetMediaStateName was(is) undefined
+            //if (sourceMediaStateTransitionOut.targetMediaStateName == mediaState.name) {
+            if (sourceMediaStateTransitionOut.targetMediaState.name == mediaState.name) {
+                sourceMediaState.transitionsOut.splice(sourceMediaState.transitionsOut.indexOf(sourceMediaStateTransitionOut), 1);
+                delete sourceMediaStateTransitionOut;
+            }
+        });
+        delete transitionIn;
+    });
+
+    this.transitionsOut.forEach(function (transitionOut) {
+
+        // delete transition from transitionsIn of target transition
+        var targetMediaState = transitionOut.targetMediaState;
+
+        // DO ME NEXT
+
+        delete transitionOut;
+    });
+
+    this.transitionsIn = [];
+    this.transitionsOut = [];
+}

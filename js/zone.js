@@ -12,3 +12,10 @@ Zone.prototype.GetMediaStates = function () {
     return this.mediaStates;
 }
 
+Zone.prototype.DeleteMediaState = function (mediaState) {
+
+    mediaState.DeleteTransitions();
+
+    this.mediaStates.splice(this.mediaStates.indexOf(mediaState), 1);
+    delete mediaState;
+}

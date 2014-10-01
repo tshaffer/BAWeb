@@ -166,6 +166,45 @@ function MediaStateThumb(name, url, x, y, mediaState, thumbDrawn) {
 MediaStateThumb.prototype = Object.create(Thumb.prototype);
 MediaStateThumb.prototype.constructor = MediaStateThumb;
 
+MediaStateThumb.prototype.Erase = function () {
+
+    // erase thumb
+    Thumb.prototype.Erase.call(this);
+
+    //debugger;
+
+    // erase transition graphics for all transitions into and out of this state
+    this.EraseTransitionGraphics();
+
+    // delete transition views objects into and out of this state
+    var mediaStateThumb = this;
+    this.transitionViewsIn.forEach(function (transitionViewIn) {
+
+        var sourceThumb = transitionViewIn.sourceThumb;
+        sourceThumb.transitionViewsOut.forEach(function (transitionViewOut) {
+            if (transitionViewOut.targetThumb.name == mediaStateThumb.name) {
+                sourceThumb.transitionViewsOut.splice(sourceThumb.transitionViewsOut.indexOf(transitionViewOut));
+                delete transitionViewOut;
+            }
+        });
+        // this doesn't seem necessary as the entire mediaStateThumb object is getting deleted
+        //mediaStateThumb.transitionViewsIn.splice(mediaStateThumb.transitionViewsIn.indexOf(transitionViewIn), 1);
+        //delete transitionView;
+    });
+    this.transitionViewsOut.forEach(function (transitionViewOut) {
+
+        // DO ME NEXT
+
+        var sourceThumb = transitionViewOut.sourceThumb;
+
+        // this doesn't seem necessary as the entire mediaStateThumb object is getting deleted
+        //mediaStateThumb.transitionViewsOut.splice(mediaStateThumb.transitionViewsOut.indexOf(transitionViewOut), 1);
+        //delete transitionView;
+    });
+
+    stage.draw();
+}
+
 MediaStateThumb.prototype.ThumbLoadComplete = function () {
 
     this.ktext.on('mousedown', function (e) {

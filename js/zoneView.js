@@ -1,9 +1,10 @@
-﻿function ZoneView() {
+﻿function ZoneView(zone) {
+    this.zone = zone;
     this.mediaThumbs = [];
 
     this.creatingTransition = false;
 
-    interactiveLayer.zoneView = zoneView;
+    interactiveLayer.zoneView = this;
 
     interactiveLayer.on('click tap', function () {
         console.log("interactiveLayer - click/tap");
@@ -147,7 +148,7 @@ ZoneView.prototype.MouseUp = function (e) {
                 thumbUnderMouse.mediaState.AddTransitionIn(transition);
                 transitionView = new TransitionView(this.sourceThumb, bsEvent, thumbUnderMouse);
                 this.sourceThumb.AddTransitionViewOut(transitionView);
-                thumbUnderMouse.AddTransitionViewOut(transitionView);
+                thumbUnderMouse.AddTransitionViewIn(transitionView);
                 this.DrawEvent(transitionView);
             }
         }
@@ -178,6 +179,24 @@ ZoneView.prototype.ThumbUnderMouse = function() {
     return selectedThumb;
 }
 
+ZoneView.prototype.DeleteSelectedMediaStates = function () {
+
+    var zone = this.zone;
+
+    this.mediaThumbs.forEach(function (mediaThumb) {
+        if (mediaThumb.selected) {
+            var mediaState = mediaThumb.mediaState;
+            console.log("delete media state " + mediaState.name);
+
+            mediaThumb.Erase();
+
+            zone.DeleteMediaState(mediaState);
+        }
+    });
+
+
+    stage.draw();
+}
 
 
 

@@ -29,7 +29,7 @@ mediaStateDragRect.yMax = 599;
 var stage;
 var interactiveLayer;
 var mediaLibraryLayer;
-var SelectMediaState;
+//var SelectMediaState;
 var StartTransitionDrag;
 var mediaStates;
 var zoneView;
