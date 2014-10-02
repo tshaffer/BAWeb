@@ -53,7 +53,16 @@ MediaState.prototype.DeleteTransitions = function () {
         // delete transition from transitionsIn of target transition
         var targetMediaState = transitionOut.targetMediaState;
 
-        // DO ME NEXT
+        // TODO find corresponding transition - method is not foolproof - need some kind of unique id to match transition
+        targetMediaState.transitionsIn.forEach(function (targetMediaStateTransitionIn) {
+            // TODO might there be transitions that have no target?
+            // TODO - targetMediaStateName was(is) undefined
+            //if (targetMediaStateTransitionOut.targetMediaStateName == mediaState.name) {
+            if (targetMediaStateTransitionIn.targetMediaState.name == mediaState.name) {
+                targetMediaState.transitionsIn.splice(targetMediaState.transitionsIn.indexOf(targetMediaStateTransitionIn), 1);
+                delete targetMediaStateTransitionIn;
+            }
+        });
 
         delete transitionOut;
     });

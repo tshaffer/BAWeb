@@ -183,7 +183,7 @@ MediaStateThumb.prototype.Erase = function () {
         var sourceThumb = transitionViewIn.sourceThumb;
         sourceThumb.transitionViewsOut.forEach(function (transitionViewOut) {
             if (transitionViewOut.targetThumb.name == mediaStateThumb.name) {
-                sourceThumb.transitionViewsOut.splice(sourceThumb.transitionViewsOut.indexOf(transitionViewOut));
+                sourceThumb.transitionViewsOut.splice(sourceThumb.transitionViewsOut.indexOf(transitionViewOut), 1);
                 delete transitionViewOut;
             }
         });
@@ -193,9 +193,13 @@ MediaStateThumb.prototype.Erase = function () {
     });
     this.transitionViewsOut.forEach(function (transitionViewOut) {
 
-        // DO ME NEXT
-
-        var sourceThumb = transitionViewOut.sourceThumb;
+        var targetThumb = transitionViewOut.targetThumb;
+        targetThumb.transitionViewsIn.forEach(function (transitionViewIn) {
+            if (transitionViewIn.sourceThumb.name == mediaStateThumb.name) {
+                targetThumb.transitionViewsIn.splice(targetThumb.transitionViewsIn.indexOf(transitionViewIn), 1);
+                delete transitionViewIn;
+            }
+        });
 
         // this doesn't seem necessary as the entire mediaStateThumb object is getting deleted
         //mediaStateThumb.transitionViewsOut.splice(mediaStateThumb.transitionViewsOut.indexOf(transitionViewOut), 1);
