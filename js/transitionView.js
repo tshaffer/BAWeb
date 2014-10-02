@@ -68,9 +68,29 @@ TransitionView.prototype.CreateEventImage = function (x, y) {
         y: y,
         image: this._image,
     });
+    this.kimage.transitionView = this;
     this.kimage.on('dblclick', function () {
+
         console.log("double click");
-        $('#timeoutEventDlg').modal();
+
+        var bsEvent = this.transitionView.bsEvent;
+
+        if (bsEvent.name == "timeout") {
+
+            $('#btnTimeoutEventDlgOK').click(function () {
+                console.log("save changes clicked");
+                var timeoutInSeconds = $('#txtTimeout')[0].value;
+                if (timeoutInSeconds == "") {
+                    timeoutInSeconds = $('#txtTimeout')[0].placeholder;
+                }
+                bsEvent.parameter = timeoutInSeconds;
+                console.log("timeout in seconds = " + timeoutInSeconds);
+                $('#timeoutEventDlg').modal('hide');
+            })
+
+            $('#txtTimeout')[0].value = bsEvent.parameter;
+            $('#timeoutEventDlg').modal();
+        }
     });
 
     interactiveLayer.add(this.kimage);

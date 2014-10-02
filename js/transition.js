@@ -1,7 +1,7 @@
 ﻿// Transition
 function Transition(sourceMediaState, bsEvent, targetMediaState, sourceMediaStateName, targetMediaStateName) {
     this.sourceMediaState = sourceMediaState;
-    this.bsEvent = bsEvent;
+    this.bsEvent = bsEvent.Clone();
     this.targetMediaState = targetMediaState;
     this.sourceMediaStateName = sourceMediaStateName;
     this.targetMediaStateName = targetMediaStateName;
@@ -10,6 +10,3 @@ function Transition(sourceMediaState, bsEvent, targetMediaState, sourceMediaStat
 Transition.prototype.toJSON = function () {
     return { "sourceMediaState": this.sourceMediaState.name, "bsEvent": this.bsEvent.name, "targetMediaState": this.targetMediaState.name };
 }
-
-
-

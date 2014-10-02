@@ -26,6 +26,7 @@
     <script src="js/thumb.js"></script>
     <script src="js/playlistItem.js"></script>
     <script src="js/imagePlaylistItem.js"></script>
+    <script src="js/bsEvent.js"></script>
     <script src="js/transition.js"></script>
     <script src="js/transitionView.js"></script>
     <script src="js/mediaLibraryItem.js"></script>
@@ -88,16 +89,6 @@
 
 
         $(function () {
-
-            $('#btnTimeoutEventDlgOK').click(function () {
-                console.log("save changes clicked");
-                var timeoutInSeconds = $('#txtTimeout')[0].value;
-                if (timeoutInSeconds == "") {
-                    timeoutInSeconds = $('#txtTimeout')[0].placeholder;
-                }
-                console.log("timeout in seconds = " + timeoutInSeconds);
-                $('#timeoutEventDlg').modal('hide');
-            })
 
             $('#timeoutEventDlg').on('show.bs.modal', function (e) {
                 console.log("timeoutEventDlg show");
@@ -215,25 +206,6 @@
             eventToolbar.ImageLoaded();
         }
 
-
-// BSEvent
-        function BSEvent(name, iconUrl, iconSelectedUrl) {
-            this.name = name;
-            this.iconUrl = iconUrl;
-            this.iconSelectedUrl = iconSelectedUrl;
-
-            this.icon = new Image();
-            this.icon.src = this.iconUrl;
-            this.icon.onload = function () {
-                console.log("BSEvent icon loaded");
-            }
-
-            this.iconSelected = new Image();
-            this.iconSelected.src = this.iconSelectedUrl;
-            this.iconSelected.onload = function () {
-                console.log("BSEvent iconSelected loaded");
-            }
-        }
 
 // Main methods
 
@@ -522,8 +494,8 @@
         eventToolbar = new EventToolbar();
 
         // initialize events
-        timeoutEvent = new BSEvent("timeout", "images/24x24_timeout.png", "images/24x24_timeout_selected.png");
-        mediaEndEvent = new BSEvent("mediaEnd", "images/24x24_videoend.png", "images/24x24_videoend_selected.png");
+        timeoutEvent = new BSEvent("timeout", "Timeout", "5", "images/24x24_timeout.png", "images/24x24_timeout_selected.png");
+        mediaEndEvent = new BSEvent("mediaEnd", "Media End", "", "images/24x24_videoend.png", "images/24x24_videoend_selected.png");
 
         bsEvents = {};
         bsEvents["timeout"] = timeoutEvent;
