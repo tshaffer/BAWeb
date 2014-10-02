@@ -6,6 +6,8 @@ function TransitionView(sourceThumb, bsEvent, targetThumb) {
 
     this._imgIcon = bsEvent.icon;
     this._imgIconSelected = bsEvent.iconSelected;
+
+    this.selected = false;
 }
 
 TransitionView.prototype.CreateGraphics = function () {
@@ -69,6 +71,13 @@ TransitionView.prototype.CreateEventImage = function (x, y) {
         image: this._image,
     });
     this.kimage.transitionView = this;
+
+    this.kimage.on('click', function (e) {
+        console.log("event selected");
+        this.transitionView.Select();
+        e.cancelBubble = true;
+    });
+
     this.kimage.on('dblclick', function () {
 
         console.log("double click");
@@ -125,4 +134,26 @@ TransitionView.prototype.CorrectYPosition = function (y) {
     return y -= 24 / 2; // 24 is iconHeight
 }
 
+TransitionView.prototype.ShowSelectionState = function () {
+    if (this.selected) {
+        this._image = this._imgIconSelected;
+    }
+    else {
+        this._image = this._imgIcon;
+    }
+    this.kimage.setImage(this._image);
+    stage.draw();
+}
+
+TransitionView.prototype.Select = function () {
+    interactiveLayer.zoneView.DeselectMediaStates();
+    interactiveLayer.zoneView.DeselectTransitions();
+    this.selected = true;
+    this.ShowSelectionState();
+}
+
+TransitionView.prototype.Deselect = function () {
+    this.selected = false;
+    this.ShowSelectionState();
+}
 

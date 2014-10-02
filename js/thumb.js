@@ -260,6 +260,9 @@ MediaStateThumb.prototype.ThumbLoadComplete = function () {
 };
 
 MediaStateThumb.prototype.MouseDown = function () {
+
+    interactiveLayer.zoneView.DeselectTransitions();
+
     if (_modifierCtrlKeyDown) {
         this.ToggleSelectionState();
     }
@@ -292,6 +295,13 @@ MediaStateThumb.prototype.ShowSelectionState = function () {
     }
     stage.draw();
 }
+
+MediaStateThumb.prototype.DeselectTransitions = function () {
+    this.transitionViewsOut.forEach(function (transitionViewOut) {
+        transitionViewOut.Deselect();
+    });
+}
+
 
 MediaStateThumb.prototype.RestoreDraggability = function () {
     this.kgroup.setDraggable(true);

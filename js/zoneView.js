@@ -8,9 +8,8 @@
 
     interactiveLayer.on('click tap', function () {
         console.log("interactiveLayer - click/tap");
-        zoneView.mediaThumbs.forEach(function (mediaThumb) {
-            mediaThumb.Deselect();
-        });
+        zoneView.DeselectMediaStates();
+        zoneView.DeselectTransitions();
     });
 
     interactiveLayer.on('mousemove', function (e) {
@@ -90,6 +89,18 @@ ZoneView.prototype.SelectThumb = function (thumb) {
         {
             mediaThumb.Deselect();
         }
+    });
+}
+
+ZoneView.prototype.DeselectMediaStates = function () {
+    this.mediaThumbs.forEach(function (mediaThumb) {
+        mediaThumb.Deselect();
+    });
+}
+
+ZoneView.prototype.DeselectTransitions = function () {
+    this.mediaThumbs.forEach(function (mediaThumb) {
+        mediaThumb.DeselectTransitions();
     });
 }
 
