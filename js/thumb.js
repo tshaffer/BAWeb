@@ -335,6 +335,20 @@ MediaStateThumb.prototype.EraseTransitionGraphics = function () {
     });
 }
 
+MediaStateThumb.prototype.GetSelectedTransition = function () {
+
+    var selectedTransitionView = 0;
+
+    this.transitionViewsOut.forEach(function (transitionView) {
+        if (transitionView.selected) {
+            selectedTransitionView = transitionView;
+            return;
+        }
+    });
+
+    return selectedTransitionView;
+}
+
 // MediaLibraryThumb
 function MediaLibraryThumb(name, url, x, y) {
     Thumb.call(this, name, url, x, y, mediaLibaryItemDragRect, this.ThumbLoadComplete); //call super constructor.

@@ -1,5 +1,6 @@
 ﻿// TransitionView
-function TransitionView(sourceThumb, bsEvent, targetThumb) {
+function TransitionView(transition, sourceThumb, bsEvent, targetThumb) {
+    this.transition = transition;
     this.sourceThumb = sourceThumb;
     this.bsEvent = bsEvent;
     this.targetThumb = targetThumb;

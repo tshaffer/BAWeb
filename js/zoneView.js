@@ -65,7 +65,7 @@ ZoneView.prototype.ThumbDrawn = function () {
             mediaState.transitionsOut.forEach(function (transition) {
                 sourceThumb = mediaStatesToMediaThumbs[transition.sourceMediaState.name];
                 targetThumb = mediaStatesToMediaThumbs[transition.targetMediaState.name];
-                transitionView = new TransitionView(sourceThumb, transition.bsEvent, targetThumb);
+                transitionView = new TransitionView(transition, sourceThumb, transition.bsEvent, targetThumb);
                 sourceThumb.AddTransitionViewOut(transitionView);
                 targetThumb.AddTransitionViewOut(transitionView);
                 zoneView.DrawEvent(transitionView);
@@ -157,7 +157,7 @@ ZoneView.prototype.MouseUp = function (e) {
                 transition = new Transition(this.sourceThumb.mediaState, bsEvent, thumbUnderMouse.mediaState);
                 this.sourceThumb.mediaState.AddTransitionOut(transition);
                 thumbUnderMouse.mediaState.AddTransitionIn(transition);
-                transitionView = new TransitionView(this.sourceThumb, bsEvent, thumbUnderMouse);
+                transitionView = new TransitionView(transition, this.sourceThumb, bsEvent, thumbUnderMouse);
                 this.sourceThumb.AddTransitionViewOut(transitionView);
                 thumbUnderMouse.AddTransitionViewIn(transitionView);
                 this.DrawEvent(transitionView);
@@ -190,6 +190,12 @@ ZoneView.prototype.ThumbUnderMouse = function() {
     return selectedThumb;
 }
 
+ZoneView.prototype.DeleteSelection = function () {
+    this.DeleteSelectedMediaStates();
+    this.DeleteSelectedTransition();
+    stage.draw();
+}
+
 ZoneView.prototype.DeleteSelectedMediaStates = function () {
 
     var zone = this.zone;
@@ -204,10 +210,48 @@ ZoneView.prototype.DeleteSelectedMediaStates = function () {
             zone.DeleteMediaState(mediaState);
         }
     });
-
-
-    stage.draw();
 }
 
+ZoneView.prototype.DeleteSelectedTransition = function () {
+    
+    var zone = this.zone;
+
+    // get the selected transition by going through each media thumb and seeing if one of its transitions is selected.
+    this.mediaThumbs.forEach(function (mediaThumb) {
+
+        transitionView = mediaThumb.GetSelectedTransition();
+        if (transitionView != 0) {
+
+// erase transition graphics, remove references to transitionView, then delete the actual transition view object
+
+            // erase transition graphics
+            transitionView.EraseGraphics();
+            stage.draw();
+
+            // remove transition view from source state's transitions out
+            var sourceThumb = transitionView.sourceThumb;
+            var transitionViewToDeleteIndex = sourceThumb.transitionViewsOut.indexOf(transitionView);
+            if (transitionViewToDeleteIndex >= 0) {
+                sourceThumb.transitionViewsOut.splice(transitionViewToDeleteIndex, 1);
+            }
+
+            // remove transition view from target state's transitions in
+            var targetThumb = transitionView.targetThumb;
+            var transitionViewToDeleteIndex = targetThumb.transitionViewsIn.indexOf(transitionView);
+            if (transitionViewToDeleteIndex >= 0) {
+                targetThumb.transitionViewsIn.splice(transitionViewToDeleteIndex, 1);
+            }
+
+            // delete actual transition view object
+            var transition = transitionView.transition;
+            delete transitionView;
+
+// remove references to transition, then delete the actual transition object
+            zone.DeleteTransition(transition);
+
+            return;
+        }
+    });
+}
 
 
