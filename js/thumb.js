@@ -171,8 +171,6 @@ MediaStateThumb.prototype.Erase = function () {
     // erase thumb
     Thumb.prototype.Erase.call(this);
 
-    //debugger;
-
     // erase transition graphics for all transitions into and out of this state
     this.EraseTransitionGraphics();
 
@@ -181,29 +179,18 @@ MediaStateThumb.prototype.Erase = function () {
     this.transitionViewsIn.forEach(function (transitionViewIn) {
 
         var sourceThumb = transitionViewIn.sourceThumb;
-        sourceThumb.transitionViewsOut.forEach(function (transitionViewOut) {
-            if (transitionViewOut.targetThumb.name == mediaStateThumb.name) {
-                sourceThumb.transitionViewsOut.splice(sourceThumb.transitionViewsOut.indexOf(transitionViewOut), 1);
-                delete transitionViewOut;
-            }
-        });
-        // this doesn't seem necessary as the entire mediaStateThumb object is getting deleted
-        //mediaStateThumb.transitionViewsIn.splice(mediaStateThumb.transitionViewsIn.indexOf(transitionViewIn), 1);
-        //delete transitionView;
+        var sourceThumbTransitionViewOutIndex = sourceThumb.transitionViewsOut.indexOf(transitionViewIn);
+        if (sourceThumbTransitionViewOutIndex >= 0) {
+            sourceThumb.transitionViewsOut.splice(sourceThumbTransitionViewOutIndex, 1);
+        }
     });
     this.transitionViewsOut.forEach(function (transitionViewOut) {
 
         var targetThumb = transitionViewOut.targetThumb;
-        targetThumb.transitionViewsIn.forEach(function (transitionViewIn) {
-            if (transitionViewIn.sourceThumb.name == mediaStateThumb.name) {
-                targetThumb.transitionViewsIn.splice(targetThumb.transitionViewsIn.indexOf(transitionViewIn), 1);
-                delete transitionViewIn;
-            }
-        });
-
-        // this doesn't seem necessary as the entire mediaStateThumb object is getting deleted
-        //mediaStateThumb.transitionViewsOut.splice(mediaStateThumb.transitionViewsOut.indexOf(transitionViewOut), 1);
-        //delete transitionView;
+        var targetThumbTransitionViewInIndex = targetThumb.transitionViewsIn.indexOf(transitionViewOut);
+        if (targetThumbTransitionViewInIndex >= 0) {
+            targetThumb.transitionViewsIn.splice(targetThumbTransitionViewInIndex, 1);
+        }
     });
 
     stage.draw();
