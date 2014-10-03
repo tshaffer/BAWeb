@@ -5,7 +5,8 @@ var mediaLibraryXBorder = 20;
 var mediaLibraryYBorder = 10;
 var mediaLibraryIntraItemSpacing = 10;
 
-var thumbLength = 100;
+//var thumbLength = 100;
+var thumbLength = 80;
 var thumbBorder = 5;
 var thumbTextHeight = 15;
 var thumbWidth = thumbLength + thumbBorder * 2;
@@ -17,11 +18,17 @@ var mediaLibraryWidth = mediaLibraryXBorder * 2 + mediaLibraryIntraItemSpacing +
 var toolbarIconSize = 36;
 var toolbarItemSize = 44;
 
+var stageWidth = 1500;
+var stageHeight = 800;
+var toolbarWidth = stageWidth - mediaLibraryWidth;
+var canvasWidth = stageWidth - mediaLibraryWidth;
+var canvasHeight = stageHeight - toolbarItemSize;
+
 var mediaStateDragRect = {}
 mediaStateDragRect.xMin = mediaLibraryWidth;
-mediaStateDragRect.xMax = 999;
+mediaStateDragRect.xMax = stageWidth - 1;
 mediaStateDragRect.yMin = toolbarItemSize;
-mediaStateDragRect.yMax = 599;
+mediaStateDragRect.yMax = stageHeight - 1;
 
 //var ZoneView = 0;
 
@@ -29,7 +36,6 @@ mediaStateDragRect.yMax = 599;
 var stage;
 var interactiveLayer;
 var mediaLibraryLayer;
-//var SelectMediaState;
 var StartTransitionDrag;
 var mediaStates;
 var zoneView;

@@ -92,9 +92,21 @@
             });
 
         // thumbnail
+        var imageWidth = this.image.width;
+        var imageHeight = this.image.height;
+        if (imageWidth > thumbLength || imageHeight >= thumbLength) {
+            var widthRatio = imageWidth / thumbLength;
+            var heightRatio = imageHeight / thumbLength;
+            var scaleFactor = Math.max(widthRatio, heightRatio);
+            imageWidth = imageWidth / scaleFactor;
+            imageHeight = imageHeight / scaleFactor;
+        }
+
         this.kimage = new Kinetic.Image({
-            x: thumbWidth / 2 - (this.image.width / 2),
-            y: thumbHeightNoText / 2 - (this.image.height / 2),
+            x: thumbWidth / 2 - (imageWidth / 2),
+            y: thumbHeightNoText / 2 - (imageHeight / 2),
+            width: imageWidth,
+            height: imageHeight,
             image: this.image,
         });
         this.kgroup.add(this.kimage);
@@ -105,7 +117,8 @@
         this.ktext = new Kinetic.Text({
             y: thumbHeightNoText - 5,
             text: this.name,
-            fontSize: 15,
+            //fontSize: 15,
+            fontSize: 12,
             fontFamily: 'Calibri',
             fill: '#555',
             width: thumbWidth,

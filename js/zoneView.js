@@ -27,8 +27,8 @@ ZoneView.prototype.DisplayZone = function (mediaStates) {
     rect = new Kinetic.Rect({
         x: 0,
         y: 0,
-        width: 1000 - mediaLibraryWidth,
-        height: 600 - toolbarItemSize,
+        width: canvasWidth,
+        height: canvasHeight,
         fill: "#F3F3F3"
     });
     interactiveLayer.add(rect);
@@ -154,7 +154,7 @@ ZoneView.prototype.MouseUp = function (e) {
             selectedEventName = eventToolbar.selectedToolbarItem.name;
             if (bsEvents[selectedEventName] != undefined) {
                 bsEvent = bsEvents[selectedEventName];
-                transition = new Transition(this.sourceThumb.mediaState, bsEvent, thumbUnderMouse.mediaState);
+                transition = new Transition(this.sourceThumb.mediaState, bsEvent, thumbUnderMouse.mediaState, this.sourceThumb.mediaState.name, thumbUnderMouse.mediaState.name);
                 this.sourceThumb.mediaState.AddTransitionOut(transition);
                 thumbUnderMouse.mediaState.AddTransitionIn(transition);
                 transitionView = new TransitionView(transition, this.sourceThumb, bsEvent, thumbUnderMouse);

@@ -22,8 +22,8 @@ ZoneEditor.prototype.ShowZoneLayout = function (zoneList) {
     rect = new Kinetic.Rect({
         x: 0,
         y: 0,
-        width: 1000 - mediaLibraryWidth,
-        height: 600 - toolbarItemSize,
+        width: canvasWidth,
+        height: canvasHeight,
         fill: "#F3F3F3"
     });
     zoneLayoutLayer.add(rect);

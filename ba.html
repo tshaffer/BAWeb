@@ -389,21 +389,21 @@
 
         stage = new Kinetic.Stage({
                 container: "container",
-            width: 1000,
-            height: 600
+            width: stageWidth,
+            height: stageHeight
         });
 
         var toolbarLayer = new Kinetic.Layer({
             x: mediaLibraryWidth,
             y: 0,
-            width: 1000 - mediaLibraryWidth,
+            width: toolbarWidth,
             height: toolbarItemSize,
         });
 
         var toolbarRect = new Kinetic.Rect({
             x: 0,
             y: 0,
-            width: 1000 - mediaLibraryWidth,
+            width: toolbarWidth,
             height: toolbarItemSize,
             fill: "#CBD8E1"
         });
@@ -413,21 +413,21 @@
                 x: 0,
             y: toolbarItemSize,
             width: mediaLibraryWidth,
-            height: 600 - toolbarItemSize
+            height: stageHeight - toolbarItemSize
         });
 
         interactiveLayer = new Kinetic.Layer({
                 x: mediaLibraryWidth,
             y: toolbarItemSize,
-            width: 1000 - mediaLibraryWidth,
-            height: 600 - toolbarItemSize
+            width: canvasWidth,
+            height: canvasHeight
         });
 
         zoneLayoutLayer = new Kinetic.Layer({
             x: mediaLibraryWidth,
             y: toolbarItemSize,
-            width: 1000 - mediaLibraryWidth,
-            height: 600 - toolbarItemSize
+            width: canvasWidth,
+            height: canvasHeight
         });
 
 
@@ -444,7 +444,7 @@
             x: 0,
             y: 0,
             width: mediaLibraryWidth,
-            height: 600 - toolbarItemSize,
+            height: canvasHeight,
             fill: "#F3F3F3"
         });
         mediaLibraryLayer.add(rect);
@@ -461,15 +461,15 @@
         var monitorRect = new Kinetic.Rect({
             x: 0,
             y: 0,
-            width: 1000 - mediaLibraryWidth,
-            height: 600 - toolbarItemSize,
+            width: canvasWidth,
+            height: canvasHeight,
             stroke: "black",
             strokeWidth: 1
         });
         zoneLayoutLayer.add(monitorRect);
 
         var line = new Kinetic.Line({
-            points: [mediaLibraryWidth-1, 0, mediaLibraryWidth-1, 599],
+            points: [mediaLibraryWidth - 1, 0, mediaLibraryWidth - 1, stageHeight - 1],
             stroke: 'black',
             strokeWidth: 1
         });
@@ -484,9 +484,9 @@
 
         mediaLibaryItemDragRect = {}
         mediaLibaryItemDragRect.xMin = 0;
-        mediaLibaryItemDragRect.xMax = 999;
+        mediaLibaryItemDragRect.xMax = stageWidth - 1;
         mediaLibaryItemDragRect.yMin = toolbarItemSize;
-        mediaLibaryItemDragRect.yMax = 599;
+        mediaLibaryItemDragRect.yMax = stageHeight - 1;
 
         GenerateThumbDisplay();
 
