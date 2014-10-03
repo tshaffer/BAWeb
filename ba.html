@@ -68,6 +68,37 @@
       </div>
     </div>
 
+    <div class="modal fade" id="openPresentationDlg" tabindex="-1" role="dialog" aria-labelledby="openPresentationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="H2">Open Presentation</h4>
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label for="savePresentationLabel">Presentation Name</label>
+                <div class="openPresentationDropDown">
+                  <button id="openPresentationBtnLabel" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                    Select a presentation
+                    <span class="caret"></span>
+                  </button>
+                  <ul id="openPresentationDlgUL" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                  </ul>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button id="btnOpenPresentationDlgOK" type="button" class="btn btn-primary">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div class="modal fade" id="savePresentationDlg" tabindex="-1" role="dialog" aria-labelledby="savePresentationModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -113,6 +144,36 @@
 
         $(function () {
 
+            $('#btnOpenPresentation').click(function () {
+
+                console.log("openPresentation invoked");
+
+                var brightSignPresentations = localStorage.getItem("BrightSignPresentations");
+                if (brightSignPresentations != undefined) {
+                    brightSignPresentationsList = JSON.parse(brightSignPresentations);
+                    $("#openPresentationDlgUL").empty();
+                    brightSignPresentationsList.forEach(function (brightSignPresentationName) {
+                        $("#openPresentationDlgUL").append('<li role="presentation"><a role="menuitem" tabindex="-1" href="#">' + brightSignPresentationName + '</a></li>');
+                    });
+
+                    $(".dropdown-menu li a").click(function () {
+                        console.log("dropdown item selected");
+                        $("#openPresentationBtnLabel").text($(this).text());
+                        $("#openPresentationBtnLabel").val($(this).text());
+                    });
+
+                    $('#openPresentationDlg').modal();
+                }
+            });
+
+            $('#btnOpenPresentationDlgOK').click(function () {
+                console.log("openPresentation OK clicked");
+                var presentationName = $("#openPresentationBtnLabel")[0].value;
+                console.log("presentationName: " + presentationName);
+                $('#openPresentationDlg').modal('hide');
+                OpenPresentation(presentationName);
+            })
+
             $('#btnSavePresentation').click(function () {
                 console.log("savePresentation invoked");
                 $('#savePresentationDlg').modal();
@@ -124,6 +185,7 @@
                 var presentationName = $('#txtPresentationName')[0].value;
                 console.log("presentationName: " + presentationName);
                 $('#savePresentationDlg').modal('hide');
+                SavePresentation(presentationName);
             })
 
             $('#timeoutEventDlg').on('show.bs.modal', function (e) {
@@ -141,6 +203,105 @@
             $('#timeoutEventDlg').on('hidden.bs.modal', function (e) {
                 console.log("timeoutEventDlg hidden");
             })
+
+// I/O functions
+            function OpenPresentation(presentationName) {
+                console.log("Open presentation");
+                var signAsJson = localStorage.getItem(presentationName);
+                signObj = JSON.parse(signAsJson);
+
+                // bogus - create object from results of parse operation
+                sign = new Sign();
+                sign.name = signObj.name;
+
+                signObj.zoneList.forEach(function (zoneObj) {
+                    zone = new Zone(zoneObj.name, 0, 0, 400, 300);
+                    zoneObj.mediaStates.forEach(function (mediaStateObj) {
+                        playlistItemObj = mediaStateObj.playlistItem;
+                        imagePlaylistItem = new ImagePlaylistItem(playlistItemObj.name, playlistItemObj.url);
+                        mediaState = new MediaState(mediaStateObj.name, imagePlaylistItem, mediaStateObj.x, mediaStateObj.y);
+
+                        mediaStateObj.transitionsIn.forEach(function (transitionObj) {
+                            bsEvent = GetBSEvent(transitionObj.bsEvent);
+                            transition = new Transition(null, bsEvent, null, transitionObj.sourceMediaState, transitionObj.targetMediaState);
+                            mediaState.AddTransitionIn(transition);
+                        });
+
+                        mediaStateObj.transitionsOut.forEach(function (transitionObj) {
+                            bsEvent = GetBSEvent(transitionObj.bsEvent);
+                            transition = new Transition(null, bsEvent, null, transitionObj.sourceMediaState, transitionObj.targetMediaState);
+                            mediaState.AddTransitionOut(transition);
+                        });
+
+                        zone.mediaStates.push(mediaState);
+                    });
+
+                    // all media states / transitions have been read; now match the transitions
+                    mediaStateNameToMediaState = {};
+                    zone.mediaStates.forEach(function (mediaState) {
+                        mediaStateNameToMediaState[mediaState.name] = mediaState;
+                    });
+
+                    zone.mediaStates.forEach(function (mediaState) {
+                        mediaState.transitionsIn.forEach(function (transition) {
+                            if (transition.sourceMediaStateName != "") {
+                                transition.sourceMediaState = mediaStateNameToMediaState[transition.sourceMediaStateName];
+                            }
+                            if (transition.targetMediaStateName != "") {
+                                transition.targetMediaState = mediaStateNameToMediaState[transition.targetMediaStateName];
+                            }
+                        });
+                        mediaState.transitionsOut.forEach(function (transition) {
+                            if (transition.sourceMediaStateName != "") {
+                                transition.sourceMediaState = mediaStateNameToMediaState[transition.sourceMediaStateName];
+                            }
+                            if (transition.targetMediaStateName != "") {
+                                transition.targetMediaState = mediaStateNameToMediaState[transition.targetMediaStateName];
+                            }
+                        });
+                    });
+
+                    sign.zoneList.push(zone);
+                });
+                
+                var mainZone = sign.zoneList[0];
+                mediaStates = mainZone.GetMediaStates();
+                zoneView.zone = mainZone;
+                zoneView.DisplayZone(mediaStates);
+            }
+
+            function SavePresentation(presentationName) {
+
+                var brightSignPresentationsList = [];
+
+                var brightSignPresentations = localStorage.getItem("BrightSignPresentations");
+                if (brightSignPresentations != undefined) {
+                    brightSignPresentationsList = JSON.parse(brightSignPresentations);
+                }
+
+                console.log("Save Presentation as " + presentationName);
+
+                var signAsJson = JSON.stringify(sign);
+                localStorage.setItem(presentationName, signAsJson);
+
+                brightSignPresentationsList.push(presentationName);
+                var brightSignPresentationListAsJSONString = JSON.stringify(brightSignPresentationsList);
+                localStorage.setItem("BrightSignPresentations", brightSignPresentationListAsJSONString);
+
+                //$.post("http://ec2-54-218-106-122.us-west-2.compute.amazonaws.com:8080/getSyncSpec")
+                //.done(function (data) {
+                //    alert("Received sync spec: " + data);
+                //})
+                //.fail(function () { alert("getSyncSpec error"); })
+                //;
+
+                //$.post("http://ec2-54-218-106-122.us-west-2.compute.amazonaws.com:8080/save", { food: "Pizza", details: "Sausage" })
+                //.done(function (data) {
+                //    alert("Data Loaded: " + data);
+                //})
+                //.fail(function () { alert("error"); })
+                //;
+            }
 
 // EventToolbar
         function EventToolbar() {

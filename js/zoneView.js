@@ -40,6 +40,7 @@ ZoneView.prototype.DisplayZone = function (mediaStates) {
     mediaStatesToMediaThumbs = {}
 
     // draw the thumbs for the media states
+    //debugger;
     mediaStates.forEach(function (mediaState) {
         thumb = new MediaStateThumb(mediaState.name, mediaState.playlistItem.url, mediaState.x, mediaState.y, mediaState, zoneView.ThumbDrawn);
         mediaStatesToMediaThumbs[mediaState.name] = thumb;
@@ -67,7 +68,7 @@ ZoneView.prototype.ThumbDrawn = function () {
                 targetThumb = mediaStatesToMediaThumbs[transition.targetMediaState.name];
                 transitionView = new TransitionView(transition, sourceThumb, transition.bsEvent, targetThumb);
                 sourceThumb.AddTransitionViewOut(transitionView);
-                targetThumb.AddTransitionViewOut(transitionView);
+                targetThumb.AddTransitionViewIn(transitionView);
                 zoneView.DrawEvent(transitionView);
             });
         });
