@@ -40,22 +40,22 @@
   <body>
 
     <div class="btn-group">
-      <button type="button" class="btn btn-default">Left</button>
-      <button type="button" class="btn btn-default">Middle</button>
+      <button id="btnOpenPresentation" type="button" class="btn btn-default">Open</button>
+      <button id="btnSavePresentation" type="button" class="btn btn-default">Save</button>
       <button type="button" class="btn btn-default">Right</button>
     </div>
     
-    <div class="modal fade" id="timeoutEventDlg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="timeoutEventDlg" tabindex="-1" role="dialog" aria-labelledby="timeoutEventModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Timeout Event</h4>
+            <h4 class="modal-title" id="timeoutEventModalLabel">Timeout Event</h4>
           </div>
           <div class="modal-body">
             <form role="form">
               <div class="form-group">
-                <label for="exampleInputEmail1">Specify timeout (seconds)</label>
+                <label for="timeoutLabel">Specify timeout (seconds)</label>
                 <input type="text" class="form-control" id="txtTimeout" placeholder="6">
               </div>
             </form>
@@ -63,6 +63,29 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             <button id="btnTimeoutEventDlgOK" type="button" class="btn btn-primary">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="savePresentationDlg" tabindex="-1" role="dialog" aria-labelledby="savePresentationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="H1">Save Presentation</h4>
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label for="savePresentationLabel">Presentation Name</label>
+                <input type="text" class="form-control" id="txtPresentationName" placeholder="">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button id="btnSavePresentationDlgOK" type="button" class="btn btn-primary">OK</button>
           </div>
         </div>
       </div>
@@ -89,6 +112,19 @@
 
 
         $(function () {
+
+            $('#btnSavePresentation').click(function () {
+                console.log("savePresentation invoked");
+                $('#savePresentationDlg').modal();
+
+            });
+
+            $('#btnSavePresentationDlgOK').click(function () {
+                console.log("savePresentation OK clicked");
+                var presentationName = $('#txtPresentationName')[0].value;
+                console.log("presentationName: " + presentationName);
+                $('#savePresentationDlg').modal('hide');
+            })
 
             $('#timeoutEventDlg').on('show.bs.modal', function (e) {
                 console.log("timeoutEventDlg show");
@@ -347,8 +383,8 @@
             for (var i = startThumbIndex; i < endThumbIndex; i++) {
 
                 var thumb = thumbs[i];
-                console.log("file name is " + thumb[0]);
-                console.log("url is " + thumb[1]);
+                //console.log("file name is " + thumb[0]);
+                //console.log("url is " + thumb[1]);
 
                 var playlistItem = new ImagePlaylistItem(thumb[0], thumb[1]);
                 var mediaLibraryItem = new MediaLibraryItem(thumb[0], playlistItem, x, y);

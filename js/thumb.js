@@ -19,7 +19,7 @@
 
     Thumb.prototype.ImageLoaded = function () {
 
-        console.log("ImageLoaded invoked on thumb " + this.name);
+        //console.log("ImageLoaded invoked on thumb " + this.name);
 
         this.kgroup = new Kinetic.Group({
             x: this.x,
