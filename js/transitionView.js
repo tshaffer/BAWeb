@@ -44,7 +44,6 @@ TransitionView.prototype.CreateGraphics = function () {
         yDestinationMiddle = (yDestinationTop + yDestinationBottom) / 2;
 
         this.CreateLine(xSourceCenter, xDestinationCenter, ySourceBottom, yDestinationTop);
-
         this.CreateEventImage((xSourceCenter + xDestinationCenter) / 2, (ySourceBottom + yDestinationTop) / 2);
     }
 }
@@ -123,6 +122,31 @@ TransitionView.prototype.CreateLine = function (xSourceCenter, xDestinationCente
         strokeWidth: 1
     });
     interactiveLayer.add(this.kcircle);
+
+    stage.draw();
+}
+
+TransitionView.prototype.SetConnectingLineSourceX = function (x) {
+    var points = this.kline.getPoints();
+    //points[0] = x;    different versions of Kinetic have different API!!
+    points[0].x = x;
+    this.kline.setPoints(points);
+
+    //var xCenter = this.CorrectXPosition((points[0].x + points[1].x) / 2);
+    //this.kimage.x = xCenter;
+
+    stage.draw();
+}
+
+TransitionView.prototype.SetConnectingLineDestinationX = function (x) {
+    var points = this.kline.getPoints();
+    //points[2] = x;   different versions of Kinetic have different API!!
+    points[1].x = x;
+    this.kline.setPoints(points);
+
+    var xCenter = this.CorrectXPosition((points[0].x + points[1].x) / 2);
+    //this.kimage.x = xCenter;
+    this.kimage.setPosition(xCenter, this.kimage.getPosition().y);
 
     stage.draw();
 }

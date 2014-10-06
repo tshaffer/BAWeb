@@ -47,6 +47,7 @@ ZoneView.prototype.DisplayZone = function (mediaStates) {
         zoneView.mediaThumbs.push(thumb);
     });
 
+    this.RedrawTransitionLines();
 }
 
 ZoneView.prototype.ThumbDrawn = function () {
@@ -255,4 +256,77 @@ ZoneView.prototype.DeleteSelectedTransition = function () {
     });
 }
 
+ZoneView.prototype.RedrawTransitionLines = function () {
+
+    this.mediaThumbs.forEach(function (mediaThumb) {
+        var sortedTransitionList = [];
+        mediaThumb.transitionViewsOut.forEach(function (transitionViewOut) {
+            var targetThumb = transitionViewOut.targetThumb;
+            var x = targetThumb.x;
+
+            var transitionInserted = false;
+            var index = 0;
+
+            sortedTransitionList.forEach(function (sortedTransition) {
+                sortedMediaThumb = sortedTransition.targetThumb;
+                var sortedX = sortedMediaThumb.x;
+                if (x < sortedX) {
+                    sortedTransitionList.splice(index, 0, transitionViewOut);
+                    transitionInserted = true;
+                    return;
+                }
+                index++;
+            });
+
+            if (!transitionInserted) {
+                sortedTransitionList.push(transitionViewOut);
+            }
+        });
+
+        // now redraw the transitions from left to right
+        var numPoints = sortedTransitionList.length;
+        var spaceBetweenPoints = thumbWidth / (numPoints + 1);
+        var currentX = mediaThumb.x + spaceBetweenPoints;
+        sortedTransitionList.forEach(function (sortedTransition) {
+            sortedTransition.SetConnectingLineSourceX(currentX);
+            currentX += spaceBetweenPoints;
+        });
+
+        // now do the same for the destination x values
+        sortedTransitionList = [];
+        mediaThumb.transitionViewsIn.forEach(function (transitionViewIn) {
+            var sourceThumb = transitionViewIn.sourceThumb;
+            var x = sourceThumb.x;
+
+            var transitionInserted = false;
+            var index = 0;
+
+            sortedTransitionList.forEach(function (sortedTransition) {
+                sortedMediaThumb = sortedTransition.sourceThumb;
+                var sortedX = sortedMediaThumb.x;
+                if (x < sortedX) {
+                    sortedTransitionList.splice(index, 0, transitionViewIn);
+                    transitionInserted = true;
+                    return;
+                }
+                index++;
+            });
+
+            if (!transitionInserted) {
+                sortedTransitionList.push(transitionViewIn);
+            }
+        });
+
+        // now redraw the transitions from left to right
+        var numPoints = sortedTransitionList.length;
+        var spaceBetweenPoints = thumbWidth / (numPoints + 1);
+        var currentX = mediaThumb.x + spaceBetweenPoints;
+        sortedTransitionList.forEach(function (sortedTransition) {
+            sortedTransition.SetConnectingLineDestinationX(currentX);
+            currentX += spaceBetweenPoints;
+        });
+    });
+
+    stage.draw();
+}
 

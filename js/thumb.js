@@ -237,9 +237,21 @@ MediaStateThumb.prototype.ThumbLoadComplete = function () {
     });
 
     this.kgroup.on('dragend', function () {
+
+        var currentPosition = this.thumb.GetCurrentPosition();
+
+        // update objects
+        this.thumb.x = currentPosition.x;
+        this.thumb.y = currentPosition.y;
+        this.thumb.mediaState.SetCurrentPosition(currentPosition);
+
         // 'this' is the kgroup
         this.thumb.RedrawTransitionGraphics();
-        this.thumb.mediaState.SetCurrentPosition(this.thumb.GetCurrentPosition());
+
+        // update local variables
+        this.thumb.x = this.thumb.GetCurrentPosition().x;
+        this.thumb.y = this.thumb.GetCurrentPosition().y;
+
         //  refresh display
         stage.draw();
     });
@@ -323,6 +335,8 @@ MediaStateThumb.prototype.RedrawTransitionGraphics = function () {
     this.transitionViewsOut.forEach(function (transitionView) {
         transitionView.CreateGraphics();
     });
+
+    interactiveLayer.zoneView.RedrawTransitionLines();
 }
 
 MediaStateThumb.prototype.EraseTransitionGraphics = function () {
